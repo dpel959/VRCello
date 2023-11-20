@@ -5,34 +5,41 @@ using UnityEngine;
 public class CelloStringScript : MonoBehaviour
 {
     public CelloBowScript celloBow;
-    private Renderer renderer;
+    public DebugTextScript debugText;
+    private Renderer stringRenderer;
+    private Vector3 bowPrePos = new Vector3(0, 0, 0);
+    private Vector3 bowLocalPos = new Vector3(0, 0, 0);
 
     private void Start()
     {
-        renderer = GetComponent<Renderer>();
+        stringRenderer = GetComponent<Renderer>();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.transform.CompareTag("Bow"))
         {
-            celloBow.SetPrePosition();
+            bowPrePos = collision.transform.localPosition;
         }
     }
 
     private void OnCollisionStay(Collision collision)
     {
         if (collision.transform.CompareTag("Bow")){
-            if (celloBow.transform.localPosition.y > celloBow.GetPrePosition().y)
+            bowLocalPos = celloBow.transform.localPosition;
+            if (bowLocalPos.x > bowPrePos.x)
             {
-                renderer.material.color = new Color(255, 0, 0);
-                celloBow.SetPrePosition();
+                stringRenderer.material.color = new Color(255, 0, 0);
+                //debugText.SetDebugText("localpos :" + celloBow.transform.localPosition.y.ToString());
+                //debugText.SetDebugText("prePos :" + celloBow.GetPrePosition().y.ToString());
             }
-            if (celloBow.transform.localPosition.y < celloBow.GetPrePosition().y)
+            if (bowLocalPos.x < bowPrePos.x)
             {
-                renderer.material.color = new Color(0, 0, 255);
-                celloBow.SetPrePosition();
+                stringRenderer.material.color = new Color(0, 0, 255);
+                //debugText.SetDebugText("localpos :" + celloBow.transform.localPosition.y.ToString());
+                //debugText.SetDebugText("prePos :" + celloBow.GetPrePosition().y.ToString());
             }
+            bowPrePos = bowLocalPos;
         }
     }
 
@@ -40,7 +47,7 @@ public class CelloStringScript : MonoBehaviour
     {
         if (collision.transform.CompareTag("Bow"))
         {
-            renderer.material.color = new Color(0, 0, 0);
+            stringRenderer.material.color = new Color(0, 0, 0);
         }
     }
 }
