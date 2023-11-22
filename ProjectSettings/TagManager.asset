@@ -7,6 +7,7 @@ TagManager:
   - SamplesInfoPanel
   - Bow
   - String
+  - Note
   layers:
   - Default
   - TransparentFX
