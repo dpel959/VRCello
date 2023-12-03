@@ -7,13 +7,14 @@ public class NoteManager : MonoBehaviour
     public int bpm = 0;
     double currentTime = 0d;
 
+    TimingManager theTimingMaanger;
 
     [SerializeField] Transform tfNoteAppear = null;
     [SerializeField] GameObject goNote = null;
     // Start is called before the first frame update
     void Start()
     {
-        
+        theTimingMaanger = GetComponent<TimingManager>();
     }
 
     // Update is called once per frame
@@ -25,6 +26,7 @@ public class NoteManager : MonoBehaviour
             GameObject t_note = Instantiate(goNote, tfNoteAppear.position, tfNoteAppear.rotation);
             t_note.transform.SetParent(this.transform);
             t_note.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            theTimingMaanger.boxNoteList.Add(t_note);
             currentTime -= 60d / bpm;
         }
     }
@@ -32,6 +34,9 @@ public class NoteManager : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Note"))
+        {
+            theTimingMaanger.boxNoteList.Remove(other.gameObject);
             Destroy(other.gameObject);
+        }
     }
 }
