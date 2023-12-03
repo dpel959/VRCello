@@ -26,7 +26,7 @@ public class TimingManager : MonoBehaviour
         }
     }
 
-    public void CheckTiming()
+    public bool CheckTiming()
     {
         for (int i = 0; i < boxNoteList.Count; i++)
         {
@@ -35,16 +35,22 @@ public class TimingManager : MonoBehaviour
             {
                 if(timingBoxs[x].x <= t_notePosX && t_notePosX <= timingBoxs[x].y)
                 {
-                    boxNoteList[i].GetComponent<Note>().HideNote();
                     effectManager.NoteColorChange(x);
                     effectManager.NoteHitEffect(boxNoteList[i].transform.position);
-                    boxNoteList.RemoveAt(i);
                     JudgeEffectManager.Instance.JudgementEffect(x);
-                    return;
+
+                    boxNoteList[i].GetComponent<Note>().HideNote();
+                    boxNoteList.RemoveAt(i);
+
+                    ScoreManager.Instance.IncreaseScore(x);
+
+                    return true;
                 }
             }
         }
 
+        ComboManager.Instance.ResetCombo();
         JudgeEffectManager.Instance.JudgementEffect(timingBoxs.Length); // Miss effect
+        return false;
     }
 }

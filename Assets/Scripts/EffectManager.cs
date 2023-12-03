@@ -16,7 +16,6 @@ public class EffectManager : MonoBehaviour
     public void NoteHitEffect(Vector3 notePos)
     {
         transform.position = notePos;
-        Debug.Log("Animation Triggered");
         noteHitAnimator.SetTrigger(hit);
     }
 

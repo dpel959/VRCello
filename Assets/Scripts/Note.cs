@@ -8,9 +8,12 @@ public class Note : MonoBehaviour
     public float noteSpeed = 400f;
     Image noteImage;
 
-    private void Start()
+    private void OnEnable()
     {
-        noteImage = GetComponent<Image>();
+        if (noteImage == null)
+            noteImage = GetComponent<Image>();
+
+        noteImage.enabled = true;
     }
 
     public void HideNote()
