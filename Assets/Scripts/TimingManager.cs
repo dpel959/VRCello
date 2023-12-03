@@ -10,8 +10,12 @@ public class TimingManager : MonoBehaviour
     [SerializeField] RectTransform[] timingRect = null;
     Vector2[] timingBoxs = null;
 
+    public EffectManager effectManager;
+
     private void Start()
     {
+        if (effectManager == null)
+            Debug.LogError("TImingManager's effectManager is null");
         timingBoxs = new Vector2[timingRect.Length];
 
         for(int i = 0; i < timingRect.Length; i++)
@@ -20,10 +24,6 @@ public class TimingManager : MonoBehaviour
                 center.localPosition.x + timingRect[i].rect.width / 2);
             //Debug.Log("timing box " + i + " " + timingBoxs[i].x + " , " + timingBoxs[i].y);
         }
-    }
-    private void Update()
-    {
-        
     }
 
     public void CheckTiming()
@@ -35,12 +35,16 @@ public class TimingManager : MonoBehaviour
             {
                 if(timingBoxs[x].x <= t_notePosX && t_notePosX <= timingBoxs[x].y)
                 {
-                    Debug.Log("Hit" + x);
+                    boxNoteList[i].GetComponent<Note>().HideNote();
+                    effectManager.NoteColorChange(x);
+                    effectManager.NoteHitEffect(boxNoteList[i].transform.position);
+                    boxNoteList.RemoveAt(i);
+                    JudgeEffectManager.Instance.JudgementEffect(x);
                     return;
                 }
             }
         }
 
-        Debug.Log("Miss");
+        JudgeEffectManager.Instance.JudgementEffect(timingBoxs.Length); // Miss effect
     }
 }

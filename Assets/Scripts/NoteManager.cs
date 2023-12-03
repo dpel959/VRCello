@@ -7,14 +7,14 @@ public class NoteManager : MonoBehaviour
     public int bpm = 0;
     double currentTime = 0d;
 
-    TimingManager theTimingMaanger;
+    TimingManager theTimingManager;
 
     [SerializeField] Transform tfNoteAppear = null;
     [SerializeField] GameObject goNote = null;
     // Start is called before the first frame update
     void Start()
     {
-        theTimingMaanger = GetComponent<TimingManager>();
+        theTimingManager = GetComponent<TimingManager>();
     }
 
     // Update is called once per frame
@@ -26,7 +26,7 @@ public class NoteManager : MonoBehaviour
             GameObject t_note = Instantiate(goNote, tfNoteAppear.position, tfNoteAppear.rotation);
             t_note.transform.SetParent(this.transform);
             t_note.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-            theTimingMaanger.boxNoteList.Add(t_note);
+            theTimingManager.boxNoteList.Add(t_note);
             currentTime -= 60d / bpm;
         }
     }
@@ -35,7 +35,10 @@ public class NoteManager : MonoBehaviour
     {
         if (other.CompareTag("Note"))
         {
-            theTimingMaanger.boxNoteList.Remove(other.gameObject);
+            if (other.GetComponent<Note>().isImageEnabled()) // 贸府 救等芭老锭父! Miss 犁积.
+                JudgeEffectManager.Instance.JudgementEffect(4);
+
+            theTimingManager.boxNoteList.Remove(other.gameObject);
             Destroy(other.gameObject);
         }
     }
