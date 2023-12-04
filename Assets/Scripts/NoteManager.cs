@@ -7,6 +7,7 @@ public class NoteManager : MonoBehaviour
     public int bpm = 0;
     double currentTime = 0d;
 
+    bool noteActive = true;
     TimingManager theTimingManager;
 
     [SerializeField] Transform tfNoteAppear = null;
@@ -18,16 +19,19 @@ public class NoteManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentTime += Time.deltaTime;
-        if (currentTime >= 60d / bpm)
+        if(noteActive)
         {
-            GameObject t_note = ObjectPool.Instance.noteQueue.Dequeue();
-            t_note.transform.position = tfNoteAppear.position;
-            t_note.transform.rotation = tfNoteAppear.rotation;
-            t_note.SetActive(true);
-            t_note.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-            theTimingManager.boxNoteList.Add(t_note);
-            currentTime -= 60d / bpm;
+            currentTime += Time.deltaTime;
+            if (currentTime >= 60d / bpm)
+            {
+                GameObject t_note = ObjectPool.Instance.noteQueue.Dequeue();
+                t_note.transform.position = tfNoteAppear.position;
+                t_note.transform.rotation = tfNoteAppear.rotation;
+                t_note.SetActive(true);
+                t_note.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                theTimingManager.boxNoteList.Add(t_note);
+                currentTime -= 60d / bpm;
+            }
         }
     }
 
@@ -39,14 +43,25 @@ public class NoteManager : MonoBehaviour
             {
                 JudgeEffectManager.Instance.JudgementEffect(4);
                 ComboManager.Instance.ResetCombo();
+                ComboManager.Instance.judgeRecord[4]++;
+                PlayerController.Instance.PlayerDamage(10f);
             }
 
             theTimingManager.boxNoteList.Remove(other.gameObject);
 
             ObjectPool.Instance.noteQueue.Enqueue(other.gameObject);
             other.gameObject.SetActive(false);
+        }
+    }
 
-            //Destroy(other.gameObject);
+    // 게임 끝낼때
+    public void RemoveAllNote()
+    {
+        noteActive = false;
+        for(int i = 0; i < theTimingManager.boxNoteList.Count; i++)
+        {
+            theTimingManager.boxNoteList[i].SetActive(false);
+            ObjectPool.Instance.noteQueue.Enqueue(theTimingManager.boxNoteList[i]);
         }
     }
 }

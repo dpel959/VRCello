@@ -4,14 +4,7 @@ using UnityEngine;
 
 public class HitFrame : MonoBehaviour
 {
-    AudioSource audioSource;
     bool musicStart = false;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        audioSource = GetComponent<AudioSource>();
-    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -19,7 +12,7 @@ public class HitFrame : MonoBehaviour
         {
             if (other.CompareTag("Note"))
             {
-                audioSource.Play();
+                //AudioManagerScript.Instance.PlayBGM("BGM1");
                 musicStart = true;
             }
         }

@@ -9,14 +9,17 @@ public class ComboManager : Singleton<ComboManager>
     [SerializeField] Image goComboImage = null;
     [SerializeField] TMP_Text comboText = null;
 
-    int currentCombo = 0;
-
     Animator animator;
     string animComboUp = "ComboUp";
     public int CurrentCombo { get; set; }
+    public int MaxCombo { get; set; }
+
+    public int[] judgeRecord = new int[5];
 
     private void Start()
     {
+        CurrentCombo = 0;
+        MaxCombo = 0;
         animator = GetComponent<Animator>();   
         goComboImage = GetComponentInChildren<Image>();
         comboText = GetComponentInChildren<TMP_Text>();
@@ -25,10 +28,13 @@ public class ComboManager : Singleton<ComboManager>
 
     public void IncreaseCombo(int p_num = 1)
     {
-        currentCombo += 1;
-        comboText.text = string.Format("{0:#,##0}", currentCombo);
+        CurrentCombo += 1;
+        comboText.text = string.Format("{0:#,##0}", CurrentCombo);
 
-        if(currentCombo > 1)
+        if (MaxCombo < CurrentCombo)
+            MaxCombo = CurrentCombo;
+
+        if(CurrentCombo > 1)
         {
             goComboImage.gameObject.SetActive(true);
             comboText.gameObject.SetActive(true);
@@ -39,7 +45,7 @@ public class ComboManager : Singleton<ComboManager>
 
     public void ResetCombo()
     {
-        currentCombo = 0;
+        CurrentCombo = 0;
         goComboImage.gameObject.SetActive(false);
         comboText.gameObject.SetActive(false);
     }

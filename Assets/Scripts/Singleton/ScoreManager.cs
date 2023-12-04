@@ -8,7 +8,7 @@ public class ScoreManager : Singleton<ScoreManager>
 {
     [SerializeField] TMP_Text scoreText = null;
     [SerializeField] int increaseScore = 10;
-    int currentScore = 0;
+    public int CurrentScore { get; set; }
 
     Animator animator;
     string animScoreUp = "ScoreUp";
@@ -18,7 +18,7 @@ public class ScoreManager : Singleton<ScoreManager>
     void Start()
     {
         animator = GetComponent<Animator>();
-        currentScore = 0;
+        CurrentScore = 0;
         scoreText = GetComponentInChildren<TMP_Text>();
         scoreText.text = "Score : 0";
     }
@@ -35,18 +35,12 @@ public class ScoreManager : Singleton<ScoreManager>
 
         t_increaseScore = (int)(t_increaseScore * weight[JudgementState]);
 
-        currentScore += t_increaseScore;
+        CurrentScore += t_increaseScore;
 
-        scoreText.text = string.Format("Score : {0:#,##0}", currentScore);
+        scoreText.text = string.Format("Score : {0:#,##0}", CurrentScore);
 
         animator.SetTrigger(animScoreUp);
 
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
