@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Note : MonoBehaviour
 {
+    [field:SerializeField]
+    public int noteSpecies { get; set; }
     public float noteSpeed = 400f;
     Image noteImage;
 

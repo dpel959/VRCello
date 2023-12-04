@@ -39,7 +39,8 @@ public class NoteManager : MonoBehaviour
     {
         if (other.CompareTag("Note"))
         {
-            if (other.GetComponent<Note>().isImageEnabled()) // 贸府 救等芭老锭父! Miss 犁积.
+            Note t_note = other.GetComponent<Note>();
+            if (t_note.isImageEnabled()) // 贸府 救等芭老锭父! Miss 犁积.
             {
                 JudgeEffectManager.Instance.JudgementEffect(4);
                 ComboManager.Instance.ResetCombo();
@@ -49,7 +50,8 @@ public class NoteManager : MonoBehaviour
 
             theTimingManager.boxNoteList.Remove(other.gameObject);
 
-            ObjectPool.Instance.noteQueue.Enqueue(other.gameObject);
+            ObjectPool.Instance.allNoteQueue[t_note.noteSpecies].Enqueue(other.gameObject);
+            ObjectPool.Instance.RandomEnqueue();
             other.gameObject.SetActive(false);
         }
     }

@@ -25,46 +25,49 @@ public class TimingManager : MonoBehaviour
         }
     }
 
-    public bool CheckTiming()
+    public bool CheckTiming(int p_noteSpecies)
     {
         for (int i = 0; i < boxNoteList.Count; i++)
         {
             float t_notePosX = boxNoteList[i].transform.localPosition.x;
-            for(int x = 0; x < timingBoxs.Length; x++)
+            if(boxNoteList[i].GetComponent<Note>().noteSpecies != p_noteSpecies)
             {
-                if(timingBoxs[x].x <= t_notePosX && t_notePosX <= timingBoxs[x].y)
+                for (int x = 0; x < timingBoxs.Length; x++)
                 {
-                    effectManager.NoteColorChange(x);
-                    effectManager.NoteHitEffect(boxNoteList[i].transform.position);
-                    JudgeEffectManager.Instance.JudgementEffect(x);
-
-                    boxNoteList[i].GetComponent<Note>().HideNote();
-                    boxNoteList.RemoveAt(i);
-
-                    ScoreManager.Instance.IncreaseScore(x);
-
-                    ComboManager.Instance.judgeRecord[x]++;
-
-                    switch (x)
+                    if (timingBoxs[x].x <= t_notePosX && t_notePosX <= timingBoxs[x].y)
                     {
-                        case 0: //perfect
-                            PlayerController.Instance.PlayerHeal(10f);
-                            break;
-                        case 1: //cool
-                            PlayerController.Instance.PlayerHeal(5f);
-                            break;
-                        case 2: //good
-                            break;
-                        case 3: //bad
-                            PlayerController.Instance.PlayerDamage(5f);
-                            break;
-                        default:
-                            break;
+                        effectManager.NoteColorChange(x);
+                        effectManager.NoteHitEffect(boxNoteList[i].transform.position);
+                        JudgeEffectManager.Instance.JudgementEffect(x);
+
+                        boxNoteList[i].GetComponent<Note>().HideNote();
+                        boxNoteList.RemoveAt(i);
+
+                        ScoreManager.Instance.IncreaseScore(x);
+
+                        ComboManager.Instance.judgeRecord[x]++;
+
+                        switch (x)
+                        {
+                            case 0: //perfect
+                                PlayerController.Instance.PlayerHeal(10f);
+                                break;
+                            case 1: //cool
+                                PlayerController.Instance.PlayerHeal(5f);
+                                break;
+                            case 2: //good
+                                break;
+                            case 3: //bad
+                                PlayerController.Instance.PlayerDamage(5f);
+                                break;
+                            default:
+                                break;
+                        }
+
+                        AudioManagerScript.Instance.PlaySFX("Clap");
+
+                        return true;
                     }
-
-                    AudioManagerScript.Instance.PlaySFX("Clap");
-
-                    return true;
                 }
             }
         }

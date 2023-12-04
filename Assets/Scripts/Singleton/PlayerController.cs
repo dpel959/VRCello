@@ -23,7 +23,7 @@ public class PlayerController : Singleton<PlayerController>
             }else if(currenthealth <= 0)
             {
                 IsDead = true;
-                GameManager.Instance.PlayerDead();
+                //GameManager.Instance.PlayerDead();
             }
         }
     }
@@ -41,13 +41,14 @@ public class PlayerController : Singleton<PlayerController>
         if (healthBar == null)
             Debug.LogError("PlayerManager isn't have HelathBar");
     }
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            timingManager.CheckTiming(); 
-        }
-    }
+
+    //void Update()
+    //{
+    //    if (Input.GetMouseButtonDown(0))
+    //    {
+    //        timingManager.CheckTiming(); 
+    //    }
+    //}
 
     public void PlayerDamage(float damage)
     {

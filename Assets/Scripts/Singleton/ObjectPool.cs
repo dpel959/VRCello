@@ -15,10 +15,14 @@ public class ObjectPool : Singleton<ObjectPool>
     [SerializeField] ObjectInfo[] objectInfos = null;
 
     public Queue<GameObject> noteQueue = new Queue<GameObject>();
-
-    private void Start()
+    public Queue<GameObject>[] allNoteQueue = new Queue<GameObject>[2];
+    int count = 15;
+    private void Awake()
     {
-        noteQueue = InsertQueue(objectInfos[0]);
+        allNoteQueue[0] = InsertQueue(objectInfos[0]); // short_left
+        allNoteQueue[1] = InsertQueue(objectInfos[1]); // short_right
+        for (int i = 0; i < count; i++)
+            RandomEnqueue();
         // 생성,파괴 많이 될 객체 있으면 [1], [2]해서 넣어주면 됨
     }
 
@@ -37,5 +41,11 @@ public class ObjectPool : Singleton<ObjectPool>
             t_queue.Enqueue(t_clone);
         }
         return t_queue;
+    }
+
+    public void RandomEnqueue()
+    {
+        int rand = Random.Range(0, allNoteQueue.Length); 
+        noteQueue.Enqueue(allNoteQueue[rand].Dequeue());
     }
 }

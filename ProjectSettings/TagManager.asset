@@ -8,6 +8,8 @@ TagManager:
   - Bow
   - String
   - Note
+  - SNote_Left
+  - SNote_Right
   layers:
   - Default
   - TransparentFX
@@ -15,7 +17,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Note
   - 
   - 
   - 
