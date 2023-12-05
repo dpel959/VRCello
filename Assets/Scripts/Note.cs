@@ -6,7 +6,11 @@ using UnityEngine.UI;
 public class Note : MonoBehaviour
 {
     [field:SerializeField]
-    public int noteSpecies { get; set; }
+    public int NoteSpecies { get; set; }
+    [field: SerializeField]
+    public bool EndFlag { get; set; }
+    [field: SerializeField]
+    public int Direction { get; set; } //0 = left, 1 = right
     public float noteSpeed = 400f;
     Image noteImage;
 

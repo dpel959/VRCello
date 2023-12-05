@@ -15,6 +15,6 @@ public class DebugTextScript : MonoBehaviour
     public void SetDebugText(string str)
     {
         debugText.text += str + "\n";
-        if (debugText.text.Length > 9000) debugText.text = string.Empty;
+        if (debugText.text.Length > 1000) debugText.text = string.Empty;
     }
 }

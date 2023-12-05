@@ -8,8 +8,7 @@ TagManager:
   - Bow
   - String
   - Note
-  - SNote_Left
-  - SNote_Right
+  - Panel
   layers:
   - Default
   - TransparentFX

@@ -42,25 +42,14 @@ public class PlayerController : Singleton<PlayerController>
             Debug.LogError("PlayerManager isn't have HelathBar");
     }
 
-    //void Update()
-    //{
-    //    if (Input.GetMouseButtonDown(0))
-    //    {
-    //        timingManager.CheckTiming(); 
-    //    }
-    //}
-
     public void PlayerDamage(float damage)
     {
-        Debug.Log("Player Damaged");
         CurrentHealth -= damage;
-        Debug.Log(CurrentHealth);
         healthBar.HealthBarUpdate();
     }
 
     public void PlayerHeal(float heal)
     {
-        Debug.Log("Player Healed");
         CurrentHealth += heal;
         healthBar.HealthBarUpdate();
     }

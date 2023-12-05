@@ -6,6 +6,7 @@ public class HitFrame : MonoBehaviour
 {
     bool musicStart = false;
 
+    public GameObject currentPanel;
     private void OnTriggerEnter(Collider other)
     {
         if (!musicStart)

@@ -8,13 +8,13 @@ public class NoteManager : MonoBehaviour
     double currentTime = 0d;
 
     bool noteActive = true;
-    TimingManager theTimingManager;
-
+    TimingManager timingManager;
     [SerializeField] Transform tfNoteAppear = null;
     void Start()
     {
-        theTimingManager = GetComponent<TimingManager>();
+        timingManager = GetComponent<TimingManager>();
     }
+
 
     // Update is called once per frame
     void Update()
@@ -29,8 +29,37 @@ public class NoteManager : MonoBehaviour
                 t_note.transform.rotation = tfNoteAppear.rotation;
                 t_note.SetActive(true);
                 t_note.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-                theTimingManager.boxNoteList.Add(t_note);
+                timingManager.boxNoteList.Add(t_note);
                 currentTime -= 60d / bpm;
+
+                Note t_noteComponent = t_note.GetComponent<Note>();
+                if (t_noteComponent.NoteSpecies == 2 || t_noteComponent.NoteSpecies == 3)
+                {
+                    if (!t_noteComponent.EndFlag)
+                    {
+                        GameObject longNotePanel = Instantiate(ObjectPool.Instance.longNotePanel, new Vector3(0f,0f,0f), Quaternion.identity);
+                        RectTransform panel_rect = longNotePanel.GetComponent<RectTransform>();
+                        longNotePanel.transform.SetParent(tfNoteAppear);
+                        longNotePanel.transform.position = tfNoteAppear.position;
+                        longNotePanel.transform.rotation = tfNoteAppear.rotation;
+                        longNotePanel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                        switch (t_noteComponent.NoteSpecies)
+                        {
+                            case 2:
+                                longNotePanel.GetComponent<Note>().Direction = 0;
+                                break;
+                            case 3:
+                                longNotePanel.GetComponent<Note>().Direction = 1;
+                                break;
+                            default:
+                                Debug.LogError("Panel Instantiation Error");
+                                break;
+                        }
+                        panel_rect.sizeDelta = new Vector2(24000f/bpm, 120f);
+                        longNotePanel.GetComponent<BoxCollider>().size = new Vector2(24000f / bpm, 120f);
+                        panel_rect.anchoredPosition = new Vector2(-24000f/(bpm*2),0f);
+                    }
+                }
             }
         }
     }
@@ -48,11 +77,19 @@ public class NoteManager : MonoBehaviour
                 PlayerController.Instance.PlayerDamage(10f);
             }
 
-            theTimingManager.boxNoteList.Remove(other.gameObject);
+            timingManager.boxNoteList.Remove(other.gameObject);
 
-            ObjectPool.Instance.allNoteQueue[t_note.noteSpecies].Enqueue(other.gameObject);
-            ObjectPool.Instance.RandomEnqueue();
+            if (t_note.NoteSpecies == 3) // long_note_right
+                ObjectPool.Instance.allNoteQueue[2].Enqueue(other.gameObject);
+            else
+                ObjectPool.Instance.allNoteQueue[t_note.NoteSpecies].Enqueue(other.gameObject);
+            if(t_note.EndFlag)
+                ObjectPool.Instance.RandomEnqueue();
             other.gameObject.SetActive(false);
+        }
+        else if (other.CompareTag("Panel"))
+        {
+            Destroy(other.gameObject);
         }
     }
 
@@ -60,10 +97,10 @@ public class NoteManager : MonoBehaviour
     public void RemoveAllNote()
     {
         noteActive = false;
-        for(int i = 0; i < theTimingManager.boxNoteList.Count; i++)
+        for(int i = 0; i < timingManager.boxNoteList.Count; i++)
         {
-            theTimingManager.boxNoteList[i].SetActive(false);
-            ObjectPool.Instance.noteQueue.Enqueue(theTimingManager.boxNoteList[i]);
+            timingManager.boxNoteList[i].SetActive(false);
+            ObjectPool.Instance.noteQueue.Enqueue(timingManager.boxNoteList[i]);
         }
     }
 }
