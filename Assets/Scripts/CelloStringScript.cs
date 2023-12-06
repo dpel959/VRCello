@@ -10,7 +10,6 @@ public class CelloStringScript : MonoBehaviour
     public float threshold = 0.05f;
     private Vector3 bowPrePos = new Vector3(0, 0, 0);
     private Vector3 bowLocalPos = new Vector3(0, 0, 0);
-    float currentTime = 0f;
     private void Start()
     {
         stringRenderer = GetComponent<Renderer>();
@@ -21,25 +20,15 @@ public class CelloStringScript : MonoBehaviour
         if (collision.transform.CompareTag("Bow"))
         {
             bowPrePos = collision.transform.localPosition;
-            //HapticManager.Instance.PlayHapticClip2();
-            //if (HapticManager.Instance.hapticCnt == 0)
-            //{
-            //    HapticManager.Instance.HapticLoopOn();
-            //}
+            if (HapticManager.Instance.hapticCnt == 0)
+            {
+                HapticManager.Instance.HapticLoopOn();
+            }
         }
     }
 
     private void OnCollisionStay(Collision collision)
     {
-        //if (currentTime <= 0.5f)
-        //{
-        //    currentTime += Time.deltaTime;
-        //}
-        //else
-        //{
-        //    bowPrePos = bowLocalPos;
-        //    currentTime = 0f;
-        //}
         if (collision.transform.CompareTag("Bow"))
         {
 
@@ -97,9 +86,25 @@ public class CelloStringScript : MonoBehaviour
                 //timingManager.CheckTiming(1);
                 stringRenderer.material.color = new Color(0, 0, 255);
             }
-            HapticManager.Instance.PlayHapticClip2();
+            if (CelloHand.Instance.isStringed)
+            {
+                if(OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.LTouch) ||
+                    OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.LTouch) ||
+                    OVRInput.Get(OVRInput.RawButton.LIndexTrigger) ||
+                    OVRInput.Get(OVRInput.RawButton.LHandTrigger))
+                {
+                    HapticManager.Instance.PlayHapticBoth();
+                }
+                else
+                {
+                    HapticManager.Instance.PlayHapticRight();
+                }
+            }
+            else
+            {
+                HapticManager.Instance.PlayHapticRight();
+            }
             bowLocalPos = collision.transform.localPosition;
-            debugText.SetDebugText(bowLocalPos.x.ToString());
         }
 
     }
@@ -126,14 +131,12 @@ public class CelloStringScript : MonoBehaviour
                 timingManager.CheckTiming(1);
             }
             bowPrePos = bowLocalPos;
-            HapticManager.Instance.StopHaptics();
-            currentTime = 0f;
             stringRenderer.material.color = new Color(0, 0, 0);
-            //if (HapticManager.Instance.hapticCnt == 0)
-            //{
-            //    HapticManager.Instance.HapticLoopOff();
-            //    HapticManager.Instance.StopHaptics();
-            //}
+            if (HapticManager.Instance.hapticCnt == 0)
+            {
+                HapticManager.Instance.HapticLoopOff();
+                HapticManager.Instance.StopHaptics();
+            }
         }
     }
 }

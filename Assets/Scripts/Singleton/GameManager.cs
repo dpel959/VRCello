@@ -13,18 +13,19 @@ public class GameManager : Singleton<GameManager>
             Debug.LogError("There is not 4 note Managers!");
         }
     }
-    //private void Update()
-    //{
-    //    if (Input.GetMouseButtonDown(1))
-    //    {
-    //        Debug.Log("result!");
-    //        for (int i = 0; i < noteManagers.Length; i++){
-    //            noteManagers[i].RemoveAllNote();
-    //            ResultManager.Instance.ShowResult();
-    //        }
-    //    }
-    //}
-    
+    private void Update()
+    {
+        if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick))
+        {
+            Debug.Log("result!");
+            for (int i = 0; i < noteManagers.Length; i++)
+            {
+                noteManagers[i].RemoveAllNote();
+                ResultManager.Instance.ShowResult();
+            }
+        }
+    }
+
     public void PlayerDead()
     {
         Debug.Log("Player Dead!");

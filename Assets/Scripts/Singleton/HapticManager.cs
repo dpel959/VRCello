@@ -18,15 +18,29 @@ public class HapticManager : Singleton<HapticManager>
         player.isLooping = false;
     }
 
-    public void PlayHapticClip1()
+    public void SetHapticClip1()
     {
         player.clip = clip1;
         player.Play(Controller.Both);
     }
-    public void PlayHapticClip2()
+    public void SetHapticClip2()
     {
         player.clip = clip2;
         player.Play(Controller.Both);
+    }
+
+    public void PlayHapticBoth()
+    {
+        player.Play(Controller.Both);
+    }
+    public void PlayHapticLeft()
+    {
+        player.Play(Controller.Left);
+    }
+
+    public void PlayHapticRight()
+    {
+        player.Play(Controller.Right);
     }
     public void StopHaptics()
     {
@@ -53,6 +67,25 @@ public class HapticManager : Singleton<HapticManager>
 
     private void Update()
     {
+        if (CelloHand.Instance.isStringed)
+        {
+            if (OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.LTouch))
+            {
+                player.Play(Controller.Left);
+            }
+            if (OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.LTouch))
+            {
+                player.Play(Controller.Left);
+            }
+            if (OVRInput.GetDown(OVRInput.RawButton.LIndexTrigger))
+            {
+                player.Play(Controller.Left);
+            }
+            if (OVRInput.GetDown(OVRInput.RawButton.LHandTrigger))
+            {
+                player.Play(Controller.Left);
+            }
+        }
         //player.amplitude = debugAmp;
         //player.frequencyShift = debugFreq;
     }
