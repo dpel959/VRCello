@@ -8,8 +8,10 @@ public class NoteManager : MonoBehaviour
     double currentTime = 0d;
 
     bool noteActive = true;
+    float longNoteHeight = float.MaxValue;
     TimingManager timingManager;
     [SerializeField] Transform tfNoteAppear = null;
+    bool isFirst = true;
     void Start()
     {
         timingManager = GetComponent<TimingManager>();
@@ -21,18 +23,44 @@ public class NoteManager : MonoBehaviour
     {
         if(noteActive)
         {
+
             currentTime += Time.deltaTime;
             if (currentTime >= 60d / bpm)
             {
                 GameObject t_note = ObjectPool.Instance.noteQueue.Dequeue();
+                Note t_noteComponent = t_note.GetComponent<Note>();
                 t_note.transform.position = tfNoteAppear.position;
                 t_note.transform.rotation = tfNoteAppear.rotation;
                 t_note.SetActive(true);
-                t_note.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                t_note.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+                float heightRand;
+                if (t_noteComponent.NoteSpecies == 2 || t_noteComponent.NoteSpecies == 3)
+                {
+                    if(longNoteHeight == float.MaxValue)
+                    {
+                        heightRand = Random.Range(-40f, 41f);
+                        longNoteHeight = heightRand;
+                    }
+                    else
+                    {
+                        heightRand = longNoteHeight;
+                    }
+                }
+                else
+                    heightRand = Random.Range(-40f, 41f);
+                t_note.transform.localPosition = new Vector3(t_note.transform.localPosition.x, t_note.transform.localPosition.y + heightRand,
+                    t_note.transform.localPosition.z);
                 timingManager.boxNoteList.Add(t_note);
                 currentTime -= 60d / bpm;
 
-                Note t_noteComponent = t_note.GetComponent<Note>();
+                if (isFirst)
+                {
+                    timingManager.handUI.transform.localPosition = new Vector3(timingManager.handUI.transform.localPosition.x
+                    , -(timingManager.boxNoteList[0].GetComponent<RectTransform>().anchoredPosition.y + 23f) / 350f
+                    , timingManager.handUI.transform.localPosition.z);
+                    isFirst = false;
+                }
+
                 if (t_noteComponent.NoteSpecies == 2 || t_noteComponent.NoteSpecies == 3)
                 {
                     if (!t_noteComponent.EndFlag)
@@ -42,7 +70,7 @@ public class NoteManager : MonoBehaviour
                         longNotePanel.transform.SetParent(tfNoteAppear);
                         longNotePanel.transform.position = tfNoteAppear.position;
                         longNotePanel.transform.rotation = tfNoteAppear.rotation;
-                        longNotePanel.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                        longNotePanel.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
                         switch (t_noteComponent.NoteSpecies)
                         {
                             case 2:
@@ -55,9 +83,13 @@ public class NoteManager : MonoBehaviour
                                 Debug.LogError("Panel Instantiation Error");
                                 break;
                         }
-                        panel_rect.sizeDelta = new Vector2(24000f/bpm, 120f);
-                        longNotePanel.GetComponent<BoxCollider>().size = new Vector2(24000f / bpm, 120f);
-                        panel_rect.anchoredPosition = new Vector2(-24000f/(bpm*2),0f);
+                        panel_rect.sizeDelta = new Vector2(36000f/bpm, 120f);
+                        longNotePanel.GetComponent<BoxCollider>().size = new Vector2(36000f / bpm, 120f);
+                        panel_rect.anchoredPosition = new Vector2(-24000f / (bpm * 2), heightRand);
+                    }
+                    else
+                    {
+                        longNoteHeight = float.MaxValue;
                     }
                 }
             }
@@ -78,6 +110,9 @@ public class NoteManager : MonoBehaviour
             }
 
             timingManager.boxNoteList.Remove(other.gameObject);
+            timingManager.handUI.transform.localPosition = new Vector3(timingManager.handUI.transform.localPosition.x
+                , -(timingManager.boxNoteList[0].GetComponent<RectTransform>().anchoredPosition.y + 23f)/350f
+                , timingManager.handUI.transform.localPosition.z);
 
             if (t_note.NoteSpecies == 3) // long_note_right
                 ObjectPool.Instance.allNoteQueue[2].Enqueue(other.gameObject);

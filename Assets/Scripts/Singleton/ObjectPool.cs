@@ -40,6 +40,11 @@ public class ObjectPool : Singleton<ObjectPool>
         for (int i = 0; i < objectInfo.count; i++)
         {
             GameObject t_clone = Instantiate(objectInfo.goPrefab, transform.position, Quaternion.identity);
+            for(int j = 0; j < 4; j++)
+                t_clone.GetComponent<Note>().pressFinger[j] = false;
+            int rand = Random.Range(0, 4);
+            t_clone.GetComponent<Note>().pressFinger[rand] = true;
+            t_clone.GetComponent<Note>().pressImage[rand].SetActive(true);
             t_clone.SetActive(false);
             if (objectInfo.tfPoolParent != null)
                 t_clone.transform.SetParent(objectInfo.tfPoolParent);
@@ -62,6 +67,12 @@ public class ObjectPool : Singleton<ObjectPool>
             {
                 int longNoteRand = Random.Range(2, 4);
                 GameObject t_clone = Instantiate(objectInfos[longNoteRand].goPrefab, transform.position, Quaternion.identity);
+                for (int k = 0; k < 4; k++)
+                    t_clone.GetComponent<Note>().pressFinger[k] = false;
+                int pressRand = Random.Range(0, 4);
+                t_clone.GetComponent<Note>().pressFinger[pressRand] = true;
+                t_clone.GetComponent<Note>().pressImage[pressRand].SetActive(true);
+                t_clone.SetActive(false);
                 if (j == rand)
                 {
                     t_clone.GetComponent<Note>().EndFlag = true;

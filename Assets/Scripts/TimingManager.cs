@@ -18,6 +18,7 @@ public class TimingManager : MonoBehaviour
     public Vector3 currentLongNoteHitPos;
     public int currentLongNoteDirection = 0;
     private float currentTime = 0f;
+    public HandUI handUI;
     private void Start()
     {
         if (effectManager == null)
@@ -35,14 +36,44 @@ public class TimingManager : MonoBehaviour
     {
         for (int i = 0; i < boxNoteList.Count; i++)
         {
-            float t_notePosX = boxNoteList[i].transform.localPosition.x;
             if (boxNoteList[i].GetComponent<Note>().NoteSpecies == p_noteSpecies)
             {
+                float t_notePosX = boxNoteList[i].transform.localPosition.x;
+                Note t_note = boxNoteList[i].GetComponent<Note>();
                 for (int x = 0; x < timingBoxs.Length; x++)
                 {
-
                     if (timingBoxs[x].x <= t_notePosX && t_notePosX <= timingBoxs[x].y)
                     {
+                        for(int press = 0; press < 4; press++)
+                        {
+                            if (t_note.pressFinger[press])
+                            {
+                                switch (press)
+                                {
+                                    case 0:
+                                        if (!OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.LTouch))
+                                            return true;
+                                        break;
+                                    case 1:
+                                        if (!OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.LTouch))
+                                            return true;
+                                        break;
+                                    case 2:
+                                        if (!OVRInput.Get(OVRInput.RawButton.LIndexTrigger))
+                                            return true;
+                                        break;
+                                    case 3:
+                                        if (!OVRInput.Get(OVRInput.RawButton.LHandTrigger))
+                                            return true;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                        if (!handUI.isCelloHandAttached)
+                            return true;
+
                         effectManager.NoteColorChange(x);
                         effectManager.NoteHitEffect(boxNoteList[i].transform.position);
                         JudgeEffectManager.Instance.JudgementEffect(x);

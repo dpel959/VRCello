@@ -21,12 +21,12 @@ public class HapticManager : Singleton<HapticManager>
     public void PlayHapticClip1()
     {
         player.clip = clip1;
-        player.Play(Controller.Right);
+        player.Play(Controller.Both);
     }
     public void PlayHapticClip2()
     {
         player.clip = clip2;
-        player.Play(Controller.Right);
+        player.Play(Controller.Both);
     }
     public void StopHaptics()
     {
@@ -53,7 +53,7 @@ public class HapticManager : Singleton<HapticManager>
 
     private void Update()
     {
-        player.amplitude = debugAmp;
-        player.frequencyShift = debugFreq;
+        //player.amplitude = debugAmp;
+        //player.frequencyShift = debugFreq;
     }
 }

@@ -9,6 +9,9 @@ TagManager:
   - String
   - Note
   - Panel
+  - StringToOculus
+  - CelloHand
+  - handUI
   layers:
   - Default
   - TransparentFX

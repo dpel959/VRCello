@@ -12,8 +12,9 @@ public class Note : MonoBehaviour
     [field: SerializeField]
     public int Direction { get; set; } //0 = left, 1 = right
     public float noteSpeed = 400f;
+    public bool[] pressFinger = new bool[4];
+    public GameObject[] pressImage;
     Image noteImage;
-
     private void OnEnable()
     {
         if (noteImage == null)
