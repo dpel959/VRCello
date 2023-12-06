@@ -46,9 +46,9 @@ public class ObjectPool : Singleton<ObjectPool>
             t_clone.GetComponent<Note>().pressFinger[rand] = true;
             t_clone.GetComponent<Note>().pressImage[rand].SetActive(true);
             t_clone.SetActive(false);
-            if (objectInfo.tfPoolParent != null)
-                t_clone.transform.SetParent(objectInfo.tfPoolParent);
-            else
+            //if (objectInfo.tfPoolParent != null)
+            //    t_clone.transform.SetParent(objectInfo.tfPoolParent);
+            //else
                 t_clone.transform.SetParent(this.transform);
 
             t_queue.Enqueue(t_clone);
@@ -60,7 +60,7 @@ public class ObjectPool : Singleton<ObjectPool>
     Queue<GameObject> InsertQueueLongNote()
     {
         Queue<GameObject> t_queue = new Queue<GameObject>();
-        int rand = Random.Range(1, 4);
+        int rand = Random.Range(1, 3);
         for (int i = 0; i < objectInfos[2].count; i++)
         {
             for (int j = 0; j <= rand; j++)
