@@ -6,6 +6,7 @@ public class OculusToString : MonoBehaviour
 {
     public GameObject stringHand;
     public bool inOculusHand = false;
+    public int whatString;
     void Update()
     {
         

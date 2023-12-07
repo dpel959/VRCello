@@ -46,7 +46,7 @@ public class TimingManager : MonoBehaviour
                     {
                         for(int press = 0; press < 4; press++)
                         {
-                            if (t_note.pressFinger[press])
+                            if (t_note.pressFinger[press]) // press
                             {
                                 switch (press)
                                 {
@@ -71,7 +71,7 @@ public class TimingManager : MonoBehaviour
                                 }
                             }
                         }
-                        if (!handUI.isCelloHandAttached)
+                        if (!handUI.isCelloHandAttached) // hand attached & what string
                             return true;
 
                         effectManager.NoteColorChange(x);

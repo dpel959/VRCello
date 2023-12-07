@@ -130,6 +130,9 @@ MonoBehaviour:
   <EndFlag>k__BackingField: 0
   <Direction>k__BackingField: 0
   noteSpeed: 400
+  pressFinger: 00000000
+  pressImage: []
+  isTemporal: 1
 --- !u!65 &3765396049909828756
 BoxCollider:
   m_ObjectHideFlags: 0

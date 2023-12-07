@@ -12,7 +12,7 @@ public class ObjectInfo
 
 public class ObjectPool : Singleton<ObjectPool>
 {
-    [SerializeField] ObjectInfo[] objectInfos = null;
+    [SerializeField] public ObjectInfo[] objectInfos = null;
 
     public Queue<GameObject> noteQueue = new Queue<GameObject>();
     public Queue<GameObject>[] allNoteQueue = new Queue<GameObject>[3];
@@ -40,16 +40,27 @@ public class ObjectPool : Singleton<ObjectPool>
         for (int i = 0; i < objectInfo.count; i++)
         {
             GameObject t_clone = Instantiate(objectInfo.goPrefab, transform.position, Quaternion.identity);
-            for(int j = 0; j < 4; j++)
-                t_clone.GetComponent<Note>().pressFinger[j] = false;
-            int rand = Random.Range(0, 4);
-            t_clone.GetComponent<Note>().pressFinger[rand] = true;
-            t_clone.GetComponent<Note>().pressImage[rand].SetActive(true);
+            Note t_note = t_clone.GetComponent<Note>();
+            for (int j = 0; j < 4; j++)
+            {
+                int rand = Random.Range(0, 2);
+                if(rand == 1)
+                {
+                    t_note.pressFinger[j] = true;
+                    t_note.pressImage[j].SetActive(true);
+                }
+                else
+                {
+                    t_note.pressFinger[j] = false;
+                    t_note.pressImage[j].SetActive(false);
+                }
+            }
+            t_note.isTemporal = false;
             t_clone.SetActive(false);
             //if (objectInfo.tfPoolParent != null)
             //    t_clone.transform.SetParent(objectInfo.tfPoolParent);
             //else
-                t_clone.transform.SetParent(this.transform);
+            t_clone.transform.SetParent(transform);
 
             t_queue.Enqueue(t_clone);
         }
@@ -60,20 +71,31 @@ public class ObjectPool : Singleton<ObjectPool>
     Queue<GameObject> InsertQueueLongNote()
     {
         Queue<GameObject> t_queue = new Queue<GameObject>();
-        int rand = Random.Range(1, 3);
+        int longRand = Random.Range(1, 3);
         for (int i = 0; i < objectInfos[2].count; i++)
         {
-            for (int j = 0; j <= rand; j++)
+            for (int j = 0; j <= longRand; j++)
             {
                 int longNoteRand = Random.Range(2, 4);
                 GameObject t_clone = Instantiate(objectInfos[longNoteRand].goPrefab, transform.position, Quaternion.identity);
+                Note t_note = t_clone.GetComponent<Note>();
                 for (int k = 0; k < 4; k++)
-                    t_clone.GetComponent<Note>().pressFinger[k] = false;
-                int pressRand = Random.Range(0, 4);
-                t_clone.GetComponent<Note>().pressFinger[pressRand] = true;
-                t_clone.GetComponent<Note>().pressImage[pressRand].SetActive(true);
+                {
+                    int rand = Random.Range(0, 2);
+                    if (rand == 1)
+                    {
+                        t_note.pressFinger[k] = true;
+                        t_note.pressImage[k].SetActive(true);
+                    }
+                    else
+                    {
+                        t_note.pressFinger[k] = false;
+                        t_note.pressImage[k].SetActive(false);
+                    }
+                }
+                t_note.isTemporal = false;
                 t_clone.SetActive(false);
-                if (j == rand)
+                if (j == longRand)
                 {
                     t_clone.GetComponent<Note>().EndFlag = true;
                 }
@@ -91,7 +113,29 @@ public class ObjectPool : Singleton<ObjectPool>
 
     public void RandomEnqueue()
     {
-        int rand = Random.Range(0, 3); // 주의 3는 없는 것과 같음
+        int rand;
+        switch (GameManager.Instance.currentStage)
+        {
+            case GameManager.Stage.Short:
+                rand = Random.Range(0, 2);
+                break;
+            case GameManager.Stage.Long:
+                rand = 2;
+                break;
+            case GameManager.Stage.ShortTwo:
+                rand = Random.Range(0, 2);
+                break;
+            case GameManager.Stage.LongTwo:
+                rand = 2;
+                break;
+            case GameManager.Stage.Song:
+                rand = Random.Range(0, 3);
+                break;
+            default:
+                Debug.LogError("Error in RandomEnqueue");
+                rand = int.MaxValue;
+                break;
+        }
         if (rand >= 0 && rand <= 1)
         {
             GameObject temp = allNoteQueue[rand].Dequeue();

@@ -5,10 +5,10 @@ using UnityEngine;
 public class NoteManager : MonoBehaviour
 {
     public int bpm = 0;
-    double currentTime = 0d;
+    //double currentTime = 0d;
 
-    bool noteActive = true;
-    float longNoteHeight = float.MaxValue;
+    //bool noteActive = true;
+    //float longNoteHeight = float.MaxValue;
     public TimingManager timingManager;
     [SerializeField] public Transform tfNoteAppear = null;
     public bool isFirst = true;
@@ -110,6 +110,7 @@ public class NoteManager : MonoBehaviour
             }
 
             timingManager.boxNoteList.Remove(other.gameObject);
+
             if (timingManager.boxNoteList.Count>0)
             {
                 timingManager.handUI.transform.localPosition = new Vector3(timingManager.handUI.transform.localPosition.x
@@ -126,9 +127,13 @@ public class NoteManager : MonoBehaviour
                 ObjectPool.Instance.allNoteQueue[2].Enqueue(other.gameObject);
             else
                 ObjectPool.Instance.allNoteQueue[t_note.NoteSpecies].Enqueue(other.gameObject);
-            if(t_note.EndFlag)
+            if (t_note.EndFlag) // if end flag, enqueue (short too)
                 ObjectPool.Instance.RandomEnqueue();
-            other.gameObject.SetActive(false);
+
+            if (t_note.isTemporal)
+                Destroy(other.gameObject);
+            else
+                other.gameObject.SetActive(false);
         }
         else if (other.CompareTag("Panel"))
         {
@@ -139,7 +144,7 @@ public class NoteManager : MonoBehaviour
     // 게임 끝낼때
     public void RemoveAllNote()
     {
-        noteActive = false;
+        //noteActive = false;
         for(int i = 0; i < timingManager.boxNoteList.Count; i++)
         {
             timingManager.boxNoteList[i].SetActive(false);

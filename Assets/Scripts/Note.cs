@@ -14,6 +14,7 @@ public class Note : MonoBehaviour
     public float noteSpeed = 400f;
     public bool[] pressFinger = new bool[4];
     public GameObject[] pressImage;
+    public bool isTemporal = false;
     Image noteImage;
     private void OnEnable()
     {
