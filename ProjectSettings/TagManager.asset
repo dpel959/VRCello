@@ -12,6 +12,7 @@ TagManager:
   - StringToOculus
   - CelloHand
   - handUI
+  - Cello
   layers:
   - Default
   - TransparentFX

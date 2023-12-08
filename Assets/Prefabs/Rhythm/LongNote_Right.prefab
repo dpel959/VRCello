@@ -481,6 +481,9 @@ MonoBehaviour:
   - {fileID: 5736061148575152851}
   - {fileID: 8478266865303209634}
   - {fileID: 8775378885818158803}
+  isTemporal: 0
+  isLongNote: 1
+  arrowImage: {fileID: 1313075356489571114}
 --- !u!222 &1083969646808894606
 CanvasRenderer:
   m_ObjectHideFlags: 0

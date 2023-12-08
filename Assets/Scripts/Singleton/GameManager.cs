@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager>
 {
     public NoteManager[] noteManagers;
+    public GameObject[] lights;
 
     public int bpm = 0;
     double currentTime = 0d;
@@ -14,13 +16,30 @@ public class GameManager : Singleton<GameManager>
     int preNoteManager = int.MaxValue;
     int preSideNoteManger = int.MaxValue;
     public Stage currentStage = Stage.Song;
+    public bool isLongNote = false;
+    public GameObject menuUI;
     public enum Stage
     {
         Short = 0,
         Long,
         ShortTwo,
         LongTwo,
+        Vibrato,
         Song
+    }
+
+    IEnumerator OnCoroutine()
+    {
+        yield return new WaitForSecondsRealtime(3f);
+        AudioManagerScript.Instance.PlaySFX("light");
+        lights[0].SetActive(true);
+        yield return new WaitForSecondsRealtime(1f);
+        AudioManagerScript.Instance.PlaySFX("light");
+        lights[1].SetActive(true);
+        yield return new WaitForSecondsRealtime(1f);
+        AudioManagerScript.Instance.PlaySFX("light");
+        lights[2].SetActive(true);
+        yield return new WaitForSecondsRealtime(3f);
     }
 
     private void Awake()
@@ -30,16 +49,16 @@ public class GameManager : Singleton<GameManager>
             Debug.LogError("There is not 4 note Managers!");
         }
     }
+
+    private void Start()
+    {
+        StageON();
+    }
     private void Update()
     {
         if (OVRInput.GetDown(OVRInput.Button.PrimaryThumbstick))
         {
-            Debug.Log("result!");
-            for (int i = 0; i < noteManagers.Length; i++)
-            {
-                noteManagers[i].RemoveAllNote();
-                ResultManager.Instance.ShowResult();
-            }
+            StageOFF();
         }
 
         if (noteActive)
@@ -52,9 +71,11 @@ public class GameManager : Singleton<GameManager>
                 Note t_noteComponent = t_note.GetComponent<Note>();
                 float heightRand; int noteManagerRand; int sideNoteManagerRand = int.MaxValue; 
                 int sideRand = Random.Range(0, 4); // 3이면 노트 동시 출현
-              
+
+                if (t_note.GetComponent<Note>().isVibrato) sideRand = int.MaxValue;
                 if(GameManager.Instance.currentStage == GameManager.Stage.Short ||
-                   GameManager.Instance.currentStage == GameManager.Stage.Long)
+                   GameManager.Instance.currentStage == GameManager.Stage.Long ||
+                   GameManager.Instance.currentStage == GameManager.Stage.Vibrato)
                 {
                     sideRand = int.MaxValue;
                 }else if (GameManager.Instance.currentStage == GameManager.Stage.ShortTwo ||
@@ -65,7 +86,7 @@ public class GameManager : Singleton<GameManager>
                 }
 
                 // if long Note
-                if (t_noteComponent.NoteSpecies == 2 || t_noteComponent.NoteSpecies == 3)
+                if (t_noteComponent.NoteSpecies == 2 || t_noteComponent.NoteSpecies == 3 || t_noteComponent.NoteSpecies == 4 || t_noteComponent.NoteSpecies == 5)
                 {
                     if (longNoteHeight == float.MaxValue) // 전 롱노트 없음
                     {
@@ -140,8 +161,6 @@ public class GameManager : Singleton<GameManager>
                         GameManager.Instance.currentStage == Stage.Song)
                     {
                         GameObject temp_obj = Instantiate(t_note, new Vector3(0f, 0f, 0f), Quaternion.identity);
-                        Debug.Log("note : " + noteManagerRand);
-                        Debug.Log("side : "+ sideNoteManagerRand);
                         temp_obj.transform.SetParent(noteManagers[sideNoteManagerRand].transform);
                         temp_obj.transform.position = noteManagers[sideNoteManagerRand].tfNoteAppear.position;
                         temp_obj.transform.rotation = noteManagers[sideNoteManagerRand].tfNoteAppear.rotation;
@@ -150,7 +169,6 @@ public class GameManager : Singleton<GameManager>
 
                         temp_obj.transform.localPosition = new Vector3(temp_obj.transform.localPosition.x, temp_obj.transform.localPosition.y + heightRand,
                             temp_obj.transform.localPosition.z);
-                        noteManagers[sideNoteManagerRand].timingManager.boxNoteList.Add(t_note);
 
                         Note temp_note = temp_obj.GetComponent<Note>();
                         temp_note.isTemporal = true;
@@ -160,6 +178,7 @@ public class GameManager : Singleton<GameManager>
                             temp_note.pressImage[i].SetActive(false);
                         }
 
+                        noteManagers[sideNoteManagerRand].timingManager.boxNoteList.Add(temp_obj);
                         if (noteManagers[sideNoteManagerRand].isFirst)
                         {
                             noteManagers[sideNoteManagerRand].timingManager.handUI.transform.localPosition = new Vector3(noteManagers[sideNoteManagerRand].timingManager.handUI.transform.localPosition.x
@@ -171,7 +190,7 @@ public class GameManager : Singleton<GameManager>
                 }
 
 
-                if (t_noteComponent.NoteSpecies == 2 || t_noteComponent.NoteSpecies == 3)
+                if (t_noteComponent.NoteSpecies == 2 || t_noteComponent.NoteSpecies == 3 || t_noteComponent.NoteSpecies == 4 || t_noteComponent.NoteSpecies == 5)
                 {
                     if (!t_noteComponent.EndFlag)
                     {
@@ -189,6 +208,12 @@ public class GameManager : Singleton<GameManager>
                             case 3:
                                 longNotePanel.GetComponent<Note>().Direction = 1;
                                 break;
+                            case 4:
+                                longNotePanel.GetComponent<Note>().Direction = 0;
+                                break;
+                            case 5:
+                                longNotePanel.GetComponent<Note>().Direction = 1;
+                                break;
                             default:
                                 Debug.LogError("Panel Instantiation Error");
                                 break;
@@ -196,12 +221,19 @@ public class GameManager : Singleton<GameManager>
                         panelRect.sizeDelta = new Vector2(36000f / bpm, 120f);
                         longNotePanel.GetComponent<BoxCollider>().size = new Vector2(36000f / bpm, 120f);
                         panelRect.anchoredPosition = new Vector2(-24000f / (bpm * 2), heightRand);
+                        if(t_noteComponent.NoteSpecies == 4 || t_noteComponent.NoteSpecies == 5)
+                        {
+                            longNotePanel.GetComponent<Image>().color = new Color(249f, 0f, 250f, 217f);
+                        }
+                        else
+                        {
+                            longNotePanel.GetComponent<Image>().color = new Color(250f, 249f, 0f, 217f);
+                        }
 
-                        if(sideRand == 3)
+                        if(sideRand == 3 && (sideNoteManagerRand <= noteManagers.Length-1 && sideNoteManagerRand >=0))
                         {
                             GameObject sideLongNotePanel = Instantiate(ObjectPool.Instance.longNotePanel, new Vector3(0f, 0f, 0f), Quaternion.identity);
                             RectTransform side_panelRect = sideLongNotePanel.GetComponent<RectTransform>();
-                            Debug.Log(sideNoteManagerRand);
                             sideLongNotePanel.transform.SetParent(noteManagers[sideNoteManagerRand].tfNoteAppear);
                             sideLongNotePanel.transform.position = noteManagers[sideNoteManagerRand].tfNoteAppear.position;
                             sideLongNotePanel.transform.rotation = noteManagers[sideNoteManagerRand].tfNoteAppear.rotation;
@@ -212,6 +244,12 @@ public class GameManager : Singleton<GameManager>
                                     sideLongNotePanel.GetComponent<Note>().Direction = 0;
                                     break;
                                 case 3:
+                                    sideLongNotePanel.GetComponent<Note>().Direction = 1;
+                                    break;
+                                case 4:
+                                    sideLongNotePanel.GetComponent<Note>().Direction = 0;
+                                    break;
+                                case 5:
                                     sideLongNotePanel.GetComponent<Note>().Direction = 1;
                                     break;
                                 default:
@@ -236,13 +274,46 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public void StageOFF()
+    {
 
+        for(int i = 0; i < noteManagers.Length; i++)
+        {
+            noteManagers[i].RemoveAllNote();
+        }
+        ResultManager.Instance.ShowResult();
+        //menuUI.SetActive(true);
+        noteActive = false;
+        for (int i = 0; i < 3; i++)
+        {
+            lights[i].SetActive(false);
+        }
+    }
+
+    public void StageON()
+    {
+        if(Instance.currentStage == Stage.Song)
+        {
+            StartCoroutine(OnCoroutine());
+        }
+        else
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                lights[i].SetActive(true);
+            }
+        }
+        //menuUI.SetActive(false);
+        ResultManager.Instance.HideResult();
+        noteActive = true;
+    }
 
     public void PlayerDead()
     {
         Debug.Log("Player Dead!");
         AudioManagerScript.Instance.PlaySFX("Dead");
         ResultManager.Instance.ShowResult();
+        noteActive = false;
         for (int i = 0; i < noteManagers.Length; i++)
         {
             noteManagers[i].RemoveAllNote();

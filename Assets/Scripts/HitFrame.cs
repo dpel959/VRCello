@@ -4,17 +4,15 @@ using UnityEngine;
 
 public class HitFrame : MonoBehaviour
 {
-    bool musicStart = false;
 
-    public GameObject currentPanel;
     private void OnTriggerEnter(Collider other)
     {
-        if (!musicStart)
+        if (!AudioManagerScript.Instance.isMusicStart && (GameManager.Instance.currentStage == GameManager.Stage.Song))
         {
             if (other.CompareTag("Note"))
             {
-                //AudioManagerScript.Instance.PlayBGM("BGM1");
-                musicStart = true;
+                AudioManagerScript.Instance.PlayBGM("BGM1");
+                AudioManagerScript.Instance.isMusicStart = true;
             }
         }
     }

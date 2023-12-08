@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StringHand : MonoBehaviour
+public class StringHand : Singleton<StringHand>
 {
     Animator animator;
+    [SerializeField]
+    GameObject visualHand;
     private void Start()
     {
-        animator = GetComponent<Animator>();    
+        animator = GetComponentInChildren<Animator>();    
     }
 
     private void Update()
@@ -43,6 +45,13 @@ public class StringHand : MonoBehaviour
         if (OVRInput.GetUp(OVRInput.RawButton.LHandTrigger))
         {
             animator.SetBool("Grab", false);
+        }
+
+        if (CelloHand.Instance.isStringed)
+        {
+            visualHand.transform.position = OVRInput.GetLocalControllerPosition(OVRInput.Controller.LTouch);
+            visualHand.transform.localPosition = new Vector3(visualHand.transform.localPosition.x - 0.05f,
+                visualHand.transform.localPosition.y - 0.07f, visualHand.transform.localPosition.z - 0.02f);
         }
     }
 }

@@ -6,7 +6,7 @@ using TMPro;
 
 public class ScoreManager : Singleton<ScoreManager>
 {
-    [SerializeField] TMP_Text scoreText = null;
+    [SerializeField] TMP_Text scoreText;
     [SerializeField] int increaseScore = 10;
     public int CurrentScore { get; set; }
 
@@ -15,7 +15,7 @@ public class ScoreManager : Singleton<ScoreManager>
 
     [SerializeField] float[] weight = null;
     [SerializeField] int comboBonusScore = 10;
-    void Start()
+    void Awake()
     {
         animator = GetComponent<Animator>();
         CurrentScore = 0;
@@ -42,5 +42,10 @@ public class ScoreManager : Singleton<ScoreManager>
         animator.SetTrigger(animScoreUp);
 
 
+    }
+
+    public void ResetScore()
+    {
+        CurrentScore = 0;
     }
 }

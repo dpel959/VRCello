@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9811321, g: 0.7998379, b: 0, a: 0.8509804}
+  m_Color: {r: 0.98039216, g: 0.97488016, b: 0, a: 0.8509804}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -133,6 +133,10 @@ MonoBehaviour:
   pressFinger: 00000000
   pressImage: []
   isTemporal: 1
+  isLongNote: 1
+  isVibrato: 0
+  arrowImage: {fileID: 0}
+  vibrateImage: {fileID: 0}
 --- !u!65 &3765396049909828756
 BoxCollider:
   m_ObjectHideFlags: 0

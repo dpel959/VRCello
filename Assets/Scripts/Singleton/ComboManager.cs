@@ -18,6 +18,10 @@ public class ComboManager : Singleton<ComboManager>
 
     private void Start()
     {
+        for(int i= 0; i < 5; i++)
+        {
+            judgeRecord[i] = 0;
+        }
         CurrentCombo = 0;
         MaxCombo = 0;
         animator = GetComponent<Animator>();   
@@ -46,7 +50,11 @@ public class ComboManager : Singleton<ComboManager>
     public void ResetCombo()
     {
         CurrentCombo = 0;
-        goComboImage.gameObject.SetActive(false);
-        comboText.gameObject.SetActive(false);
+        for (int i = 0; i < 5; i++)
+        {
+            judgeRecord[i] = 0;
+        }
+        //goComboImage.gameObject.SetActive(false);
+        //comboText.gameObject.SetActive(false);
     }
 }

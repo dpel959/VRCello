@@ -86,7 +86,5 @@ public class HapticManager : Singleton<HapticManager>
                 player.Play(Controller.Left);
             }
         }
-        //player.amplitude = debugAmp;
-        //player.frequencyShift = debugFreq;
     }
 }

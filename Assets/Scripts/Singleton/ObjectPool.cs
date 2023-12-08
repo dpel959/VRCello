@@ -15,7 +15,7 @@ public class ObjectPool : Singleton<ObjectPool>
     [SerializeField] public ObjectInfo[] objectInfos = null;
 
     public Queue<GameObject> noteQueue = new Queue<GameObject>();
-    public Queue<GameObject>[] allNoteQueue = new Queue<GameObject>[3];
+    public Queue<GameObject>[] allNoteQueue = new Queue<GameObject>[4];
     public GameObject longNotePanel;
     int poolCount = 15;
     private void Awake()
@@ -26,6 +26,7 @@ public class ObjectPool : Singleton<ObjectPool>
         }
 
         allNoteQueue[2] = InsertQueueLongNote(); // long Note queue
+        allNoteQueue[3] = InsertQueueVibrato();
         for (int i = 0; i < poolCount; i++)
         {
             RandomEnqueue();
@@ -111,6 +112,49 @@ public class ObjectPool : Singleton<ObjectPool>
         return t_queue;
     }
 
+    Queue<GameObject> InsertQueueVibrato()
+    {
+        Queue<GameObject> t_queue = new Queue<GameObject>();
+        int longRand = Random.Range(1, 3);
+        for (int i = 0; i < objectInfos[4].count; i++)
+        {
+            for (int j = 0; j <= longRand; j++)
+            {
+                int longNoteRand = Random.Range(4, 6);
+                GameObject t_clone = Instantiate(objectInfos[longNoteRand].goPrefab, transform.position, Quaternion.identity);
+                Note t_note = t_clone.GetComponent<Note>();
+                for (int k = 0; k < 4; k++)
+                {
+                    int rand = Random.Range(0, 2);
+                    if (rand == 1)
+                    {
+                        t_note.pressFinger[k] = true;
+                        t_note.pressImage[k].SetActive(true);
+                    }
+                    else
+                    {
+                        t_note.pressFinger[k] = false;
+                        t_note.pressImage[k].SetActive(false);
+                    }
+                }
+                t_note.isTemporal = false;
+                t_clone.SetActive(false);
+                if (j == longRand)
+                {
+                    t_clone.GetComponent<Note>().EndFlag = true;
+                }
+                t_clone.SetActive(false);
+                if (objectInfos[longNoteRand].tfPoolParent != null)
+                    t_clone.transform.SetParent(objectInfos[longNoteRand].tfPoolParent);
+                else
+                    t_clone.transform.SetParent(this.transform);
+
+                t_queue.Enqueue(t_clone);
+            }
+        }
+        return t_queue;
+    }
+
     public void RandomEnqueue()
     {
         int rand;
@@ -128,8 +172,11 @@ public class ObjectPool : Singleton<ObjectPool>
             case GameManager.Stage.LongTwo:
                 rand = 2;
                 break;
+            case GameManager.Stage.Vibrato:
+                rand = 3;
+                break;
             case GameManager.Stage.Song:
-                rand = Random.Range(0, 3);
+                rand = Random.Range(0, 4);
                 break;
             default:
                 Debug.LogError("Error in RandomEnqueue");
@@ -143,15 +190,19 @@ public class ObjectPool : Singleton<ObjectPool>
         }
         else if(rand == 2)
         {
-            LongNoteEnqueue();
+            LongNoteEnqueue(2);
+        }
+        else if(rand == 3)
+        {
+            LongNoteEnqueue(3);
         }
     }
 
-    public void LongNoteEnqueue()
+    public void LongNoteEnqueue(int num)
     {
-        for (int i = 0; i < allNoteQueue[2].Count; i++)
+        for (int i = 0; i < allNoteQueue[num].Count; i++)
         {
-            GameObject t_note = allNoteQueue[2].Dequeue();
+            GameObject t_note = allNoteQueue[num].Dequeue();
             noteQueue.Enqueue(t_note);
             if (t_note.GetComponent<Note>().EndFlag)
                 break;

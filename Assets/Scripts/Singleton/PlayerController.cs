@@ -44,7 +44,10 @@ public class PlayerController : Singleton<PlayerController>
 
     public void PlayerDamage(float damage)
     {
+        if (GameManager.Instance.isLongNote && CelloHand.Instance.isStringed)
+            damage = -10;
         CurrentHealth -= damage;
+        Debug.Log(currenthealth);
         healthBar.HealthBarUpdate();
     }
 

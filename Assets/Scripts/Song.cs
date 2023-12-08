@@ -9,6 +9,8 @@ public class Song : MonoBehaviour
     public string composer;
     public int bpm;
     public int maxScore;
+    [SerializeField]
+    public GameManager.Stage stage;
 
     TMP_Text[] songTexts;
     // Start is called before the first frame update
@@ -40,9 +42,13 @@ public class Song : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SelectSong()
     {
-        
+        GameManager.Instance.bpm = bpm;
+        GameManager.Instance.currentStage = stage;
+    }
+
+    public void GameStart() {
+        GameManager.Instance.StageON();
     }
 }

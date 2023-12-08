@@ -5,30 +5,30 @@ using UnityEngine;
 public class CelloHand : Singleton<CelloHand>
 {
     public GameObject oculusHand;
+    [SerializeField]
+    GameObject visualHand;
     public bool isStringed = false;
-    public int whatString = int.MaxValue;
     private void Awake()
     {
         isStringed = false;
-        whatString = int.MaxValue;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("StringToOculus"))
+        if (other.CompareTag("Cello"))
         {
             oculusHand.SetActive(false);
+            visualHand.SetActive(true);
             isStringed = true;
-            other.GetComponent<OculusToString>().inOculusHand = true;
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("StringToOculus"))
+        if (other.CompareTag("Cello"))
         {
             oculusHand.SetActive(true);
+            visualHand.SetActive(false);
             isStringed = false;
-            other.GetComponent<OculusToString>().inOculusHand = false;
         }
     }
 }

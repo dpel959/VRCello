@@ -122,18 +122,26 @@ public class NoteManager : MonoBehaviour
                 isFirst = true;
             }
 
+            if (t_note.isTemporal)
+            {
+                Destroy(other.gameObject);
+                return;
+            }
+            else
+                other.gameObject.SetActive(false);
 
-            if (t_note.NoteSpecies == 3) // long_note_right
+            if (t_note.NoteSpecies == 4 || t_note.NoteSpecies == 5)
+                ObjectPool.Instance.allNoteQueue[3].Enqueue(other.gameObject);
+            else if (t_note.NoteSpecies == 3) // long_note_right
                 ObjectPool.Instance.allNoteQueue[2].Enqueue(other.gameObject);
             else
                 ObjectPool.Instance.allNoteQueue[t_note.NoteSpecies].Enqueue(other.gameObject);
             if (t_note.EndFlag) // if end flag, enqueue (short too)
+            {
                 ObjectPool.Instance.RandomEnqueue();
+                timingManager.LongNoteCancel();
+            }
 
-            if (t_note.isTemporal)
-                Destroy(other.gameObject);
-            else
-                other.gameObject.SetActive(false);
         }
         else if (other.CompareTag("Panel"))
         {
@@ -147,8 +155,11 @@ public class NoteManager : MonoBehaviour
         //noteActive = false;
         for(int i = 0; i < timingManager.boxNoteList.Count; i++)
         {
-            timingManager.boxNoteList[i].SetActive(false);
-            ObjectPool.Instance.noteQueue.Enqueue(timingManager.boxNoteList[i]);
+            if (timingManager.boxNoteList[i] != null)
+            {
+                timingManager.boxNoteList[i].SetActive(false);
+                ObjectPool.Instance.noteQueue.Enqueue(timingManager.boxNoteList[i]);
+            }
         }
     }
 }

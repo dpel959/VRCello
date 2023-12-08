@@ -439,6 +439,8 @@ MonoBehaviour:
   - {fileID: 7866447091507687167}
   - {fileID: 9017308891492183717}
   - {fileID: 3968980733031693647}
+  isTemporal: 0
+  arrowImage: {fileID: 1313075356489571114}
 --- !u!222 &1083969646808894606
 CanvasRenderer:
   m_ObjectHideFlags: 0

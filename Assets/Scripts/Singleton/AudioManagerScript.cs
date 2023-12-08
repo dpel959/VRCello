@@ -17,6 +17,7 @@ public class AudioManagerScript : Singleton<AudioManagerScript>
     [SerializeField] AudioSource bgmPlayer = null;
     [SerializeField] AudioSource[] sfxPlayer = null;
 
+    public bool isMusicStart = false;
     public void PlayBGM(string p_bgmName)
     {
         for(int i =0; i < bgmSounds.Length; i++)

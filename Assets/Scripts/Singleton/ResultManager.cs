@@ -8,20 +8,46 @@ public class ResultManager : Singleton<ResultManager>
     [SerializeField] TMP_Text[] judgeText = null;
     [SerializeField] TMP_Text scoreText = null;
     [SerializeField] TMP_Text maxComboText = null;
-    Vector3 originPos;
+    [SerializeField]
+    RectTransform originPos;
+    [SerializeField]
+    GameObject[] allUIs;
 
     void Start()
     {
-        originPos = transform.position;
-        transform.position = new Vector3(10000, 10000, 0);
+        //originPos = GetComponent<RectTransform>().position;
+        GetComponent<RectTransform>().position = new Vector3(10000, 10000);
     }
 
     public void ShowResult()
     {
-        transform.position = originPos;
+        GetComponent<RectTransform>().position = originPos.position;
+        TurnOffUIs();
         for (int i = 0; i < judgeText.Length; i++)
             judgeText[i].text = string.Format("{0:#,##0}", ComboManager.Instance.judgeRecord[i]);
         scoreText.text = string.Format("{0:#,##0}", ScoreManager.Instance.CurrentScore);
         maxComboText.text = string.Format("{0:#,##0}", ComboManager.Instance.MaxCombo);
+    }
+    public void HideResult()
+    {
+        GetComponent<RectTransform>().position = new Vector3(10000, 10000);
+        TurnOnUIs();
+        ComboManager.Instance.ResetCombo();
+        ScoreManager.Instance.ResetScore();
+    }
+    public void TurnOnUIs()
+    {
+        for(int i =0; i < allUIs.Length; i++)
+        {
+            allUIs[i].SetActive(true);
+        }
+    }
+
+    public void TurnOffUIs()
+    {
+        for (int i = 0; i < allUIs.Length; i++)
+        {
+            allUIs[i].SetActive(false);
+        }
     }
 }
