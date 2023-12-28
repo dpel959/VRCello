@@ -22,11 +22,11 @@ public class ResultManager : Singleton<ResultManager>
     public void ShowResult()
     {
         GetComponent<RectTransform>().position = originPos.position;
-        TurnOffUIs();
         for (int i = 0; i < judgeText.Length; i++)
             judgeText[i].text = string.Format("{0:#,##0}", ComboManager.Instance.judgeRecord[i]);
         scoreText.text = string.Format("{0:#,##0}", ScoreManager.Instance.CurrentScore);
         maxComboText.text = string.Format("{0:#,##0}", ComboManager.Instance.MaxCombo);
+        TurnOffUIs();
     }
     public void HideResult()
     {

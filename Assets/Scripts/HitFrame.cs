@@ -11,7 +11,7 @@ public class HitFrame : MonoBehaviour
         {
             if (other.CompareTag("Note"))
             {
-                AudioManagerScript.Instance.PlayBGM("BGM1");
+                AudioManagerScript.Instance.PlayBGM("BGM2");
                 AudioManagerScript.Instance.isMusicStart = true;
             }
         }

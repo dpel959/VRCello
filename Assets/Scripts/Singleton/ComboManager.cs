@@ -16,7 +16,7 @@ public class ComboManager : Singleton<ComboManager>
 
     public int[] judgeRecord = new int[5];
 
-    private void Start()
+    private void Awake()
     {
         for(int i= 0; i < 5; i++)
         {
@@ -54,7 +54,14 @@ public class ComboManager : Singleton<ComboManager>
         {
             judgeRecord[i] = 0;
         }
-        //goComboImage.gameObject.SetActive(false);
-        //comboText.gameObject.SetActive(false);
+        goComboImage.gameObject.SetActive(false);
+        comboText.gameObject.SetActive(false);
+    }
+
+    public void MissCombo()
+    {
+        CurrentCombo = 0;
+        goComboImage.gameObject.SetActive(false);
+        comboText.gameObject.SetActive(false);
     }
 }

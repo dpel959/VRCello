@@ -85,6 +85,7 @@ public class ObjectPool : Singleton<ObjectPool>
                     int rand = Random.Range(0, 2);
                     if (rand == 1)
                     {
+                        // 나중에 고쳐!!
                         t_note.pressFinger[k] = true;
                         t_note.pressImage[k].SetActive(true);
                     }

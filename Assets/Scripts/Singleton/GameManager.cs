@@ -11,7 +11,7 @@ public class GameManager : Singleton<GameManager>
     public int bpm = 0;
     double currentTime = 0d;
 
-    bool noteActive = true;
+    bool noteActive = false;
     float longNoteHeight = float.MaxValue;
     int preNoteManager = int.MaxValue;
     int preSideNoteManger = int.MaxValue;
@@ -39,7 +39,8 @@ public class GameManager : Singleton<GameManager>
         yield return new WaitForSecondsRealtime(1f);
         AudioManagerScript.Instance.PlaySFX("light");
         lights[2].SetActive(true);
-        yield return new WaitForSecondsRealtime(3f);
+        yield return new WaitForSecondsRealtime(1f);
+        noteActive = true;
     }
 
     private void Awake()
@@ -190,7 +191,7 @@ public class GameManager : Singleton<GameManager>
                 }
 
 
-                if (t_noteComponent.NoteSpecies == 2 || t_noteComponent.NoteSpecies == 3 || t_noteComponent.NoteSpecies == 4 || t_noteComponent.NoteSpecies == 5)
+                if (t_noteComponent.NoteSpecies >= 2 && t_noteComponent.NoteSpecies <= 5)
                 {
                     if (!t_noteComponent.EndFlag)
                     {
@@ -221,6 +222,12 @@ public class GameManager : Singleton<GameManager>
                         panelRect.sizeDelta = new Vector2(36000f / bpm, 120f);
                         longNotePanel.GetComponent<BoxCollider>().size = new Vector2(36000f / bpm, 120f);
                         panelRect.anchoredPosition = new Vector2(-24000f / (bpm * 2), heightRand);
+                        BoxCollider[] childrenObjs = longNotePanel.GetComponentsInChildren<BoxCollider>();
+                        for(int i = 1; i< childrenObjs.Length; i++)
+                        {
+                            childrenObjs[i].transform.localPosition = new Vector3(90f*childrenObjs[i].transform.localPosition.x / bpm, 
+                                childrenObjs[i].transform.localPosition.y, childrenObjs[i].transform.localPosition.z);
+                        }
                         if(t_noteComponent.NoteSpecies == 4 || t_noteComponent.NoteSpecies == 5)
                         {
                             longNotePanel.GetComponent<Image>().color = new Color(249f, 0f, 250f, 217f);
@@ -302,10 +309,10 @@ public class GameManager : Singleton<GameManager>
             {
                 lights[i].SetActive(true);
             }
+            noteActive = true;
         }
         //menuUI.SetActive(false);
         ResultManager.Instance.HideResult();
-        noteActive = true;
     }
 
     public void PlayerDead()

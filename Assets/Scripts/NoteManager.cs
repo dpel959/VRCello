@@ -104,7 +104,7 @@ public class NoteManager : MonoBehaviour
             if (t_note.isImageEnabled()) // 贸府 救等芭老锭父! Miss 犁积.
             {
                 JudgeEffectManager.Instance.JudgementEffect(4);
-                ComboManager.Instance.ResetCombo();
+                ComboManager.Instance.MissCombo();
                 ComboManager.Instance.judgeRecord[4]++;
                 PlayerController.Instance.PlayerDamage(10f);
             }
@@ -139,13 +139,19 @@ public class NoteManager : MonoBehaviour
             if (t_note.EndFlag) // if end flag, enqueue (short too)
             {
                 ObjectPool.Instance.RandomEnqueue();
-                timingManager.LongNoteCancel();
             }
 
         }
         else if (other.CompareTag("Panel"))
         {
             Destroy(other.gameObject);
+        }
+        else if (other.CompareTag("PanelCollider") || other.CompareTag("PanelColliderEnd"))
+        {
+            JudgeEffectManager.Instance.JudgementEffect(4);
+            ComboManager.Instance.ResetCombo();
+            ComboManager.Instance.judgeRecord[4]++;
+            PlayerController.Instance.PlayerDamage(10f);
         }
     }
 

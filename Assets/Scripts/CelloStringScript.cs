@@ -8,12 +8,15 @@ public class CelloStringScript : MonoBehaviour
     public TimingManager timingManager;
     private Renderer stringRenderer;
     float currentTime = 0f;
-    float longNoteCurTime = 0f;
-    public float threshold = 0.5f;
+    float vibratoTime = 0f;
+    public float longThreshold = 0.5f;
     public float vibratoThreshold = 50f;
-    private Vector3 bowPrePos = new Vector3(0, 0, 0);
-    private Vector3 bowLocalPos = new Vector3(0, 0, 0);
+    public Vector3 bowPrePos = new Vector3(0, 0, 0);
+    public Vector3 bowCurPos = new Vector3(0, 0, 0);
     Quaternion handPreRot = Quaternion.identity;
+    public bool bowAttached = false;
+
+    private bool isPlayerVibrato = false;
     private void Start()
     {
         stringRenderer = GetComponent<Renderer>();
@@ -23,8 +26,9 @@ public class CelloStringScript : MonoBehaviour
     {
         if (collision.transform.CompareTag("Bow"))
         {
+            bowAttached = true;
             bowPrePos = collision.transform.localPosition;
-            handPreRot = CelloHand.Instance.transform.rotation;
+            handPreRot = CelloHand.Instance.transform.localRotation;
             if (HapticManager.Instance.hapticCnt == 0)
             {
                 HapticManager.Instance.HapticLoopOn();
@@ -36,77 +40,51 @@ public class CelloStringScript : MonoBehaviour
     {
         if (collision.transform.CompareTag("Bow"))
         {
-
-            bowLocalPos = collision.transform.localPosition;
-            //timingManager.longNoteEntered
+            bowCurPos = collision.transform.localPosition;
             if (timingManager.longNoteFirst || timingManager.vibratoNoteFirst)
             {
-                if (timingManager.longNoteFirst)
-                {
-                    timingManager.CheckTiming(2);
-                    timingManager.CheckTiming(3);
-                }
-                else
-                {
-                    timingManager.CheckTiming(4);
-                    timingManager.CheckTiming(5);
-                }
-
-                if (currentTime <= 5.0f)
+                if (currentTime <= 1.0f)
                 {
                     currentTime += Time.deltaTime;
                 }
                 else
                 {
-                    handPreRot = CelloHand.Instance.transform.rotation;
-                    bowPrePos = bowLocalPos;
-                    currentTime = 0;
+                    bowPrePos = bowCurPos;
+                    currentTime = 0f;
                 }
-                if (longNoteCurTime >= 1.0f)
+                if (!timingManager.longNoteHitted)
                 {
                     if (timingManager.currentLongNoteDirection == 0)
                     {
-                        if (bowLocalPos.x - bowPrePos.x < -threshold)
+                        if (bowPrePos.x - bowCurPos.x >= longThreshold)
                         {
-                                Debug.Log("correct");
-                                JudgeEffectManager.Instance.JudgementEffect(0);
+                            //vibratoTime = 0f;
 
-                                ScoreManager.Instance.IncreaseScore(0);
-
-                                ComboManager.Instance.judgeRecord[0]++;
-
-                                PlayerController.Instance.PlayerHeal(10f);
-
-                                AudioManagerScript.Instance.PlaySFX("Clap");
-                                bowPrePos = bowLocalPos;
-                                longNoteCurTime = 0f;
+                            if (timingManager.vibratoNoteFirst)
+                                timingManager.CheckTiming(4);
+                            else
+                                timingManager.CheckTiming(2);
                         }
                     }
                     else if (timingManager.currentLongNoteDirection == 1)
                     {
-                        if (bowLocalPos.x - bowPrePos.x > threshold)
+                        if (bowCurPos.x - bowPrePos.x >= longThreshold)
                         {
-                                Debug.Log("correct");
-                                JudgeEffectManager.Instance.JudgementEffect(0);
+                            //vibratoTime = 0f;
 
-                                ScoreManager.Instance.IncreaseScore(0);
-
-                                ComboManager.Instance.judgeRecord[0]++;
-
-                                PlayerController.Instance.PlayerHeal(10f);
-
-                                AudioManagerScript.Instance.PlaySFX("Clap");
-                                bowPrePos = bowLocalPos;
-                                longNoteCurTime = 0f;
+                            if (timingManager.vibratoNoteFirst)
+                                timingManager.CheckTiming(5);
+                            else
+                                timingManager.CheckTiming(3);
                         }
                     }
                 }
             }
-            if (bowLocalPos.x < bowPrePos.x)
+            if (bowCurPos.x < bowPrePos.x)
             {
                 stringRenderer.material.color = new Color(255, 0, 0);
             }
-            else if (bowLocalPos.x > bowPrePos.x)
+            else if (bowCurPos.x > bowPrePos.x)
             {
                 stringRenderer.material.color = new Color(0, 0, 255);
             }
@@ -135,24 +113,17 @@ public class CelloStringScript : MonoBehaviour
     {
         if (collision.transform.CompareTag("Bow"))
         {
-            //if (timingManager.longNoteEntered)
-            //{
-            //    timingManager.LongNoteCancel();
-            //    ComboManager.Instance.ResetCombo();
-            //    JudgeEffectManager.Instance.JudgementEffect(4); // Miss effect
-            //    ComboManager.Instance.judgeRecord[4]++;
-            //    PlayerController.Instance.PlayerDamage(10f);
-            //}
-            bowLocalPos = collision.transform.localPosition;
-            if (bowLocalPos.x < bowPrePos.x)
+            bowCurPos = collision.transform.localPosition;
+            bowAttached = false;
+            if (bowCurPos.x < bowPrePos.x) // left
             {
                 timingManager.CheckTiming(0);
             }
-            if (bowLocalPos.x > bowPrePos.x)
+            if (bowCurPos.x > bowPrePos.x) // right
             {
                 timingManager.CheckTiming(1);
             }
-            bowPrePos = bowLocalPos;
+            bowPrePos = bowCurPos;
             stringRenderer.material.color = new Color(0, 0, 0);
             if (HapticManager.Instance.hapticCnt == 0)
             {
@@ -164,28 +135,74 @@ public class CelloStringScript : MonoBehaviour
 
     private void Update()
     {
-        if (longNoteCurTime <= 1.0f)
-        {
-            longNoteCurTime += Time.deltaTime;
-        }
-        if (longNoteCurTime > 1.0f && timingManager.vibratoNoteFirst)
-        {
-            if (Mathf.Abs(CelloHand.Instance.transform.rotation.y - handPreRot.y) >= vibratoThreshold)
+            if (vibratoTime <= 1.0f)
             {
-                HapticManager.Instance.SetHapticClip1();
-                HapticManager.Instance.PlayHapticBoth();
-                JudgeEffectManager.Instance.JudgementEffect(0);
+                vibratoTime += Time.deltaTime;
+            }
+            if (vibratoTime > 1.0f)
+            {
+                if (Mathf.Abs(CelloHand.Instance.transform.localRotation.eulerAngles.x - handPreRot.eulerAngles.x) >= vibratoThreshold)
+                    isPlayerVibrato = true;
+                else
+                    isPlayerVibrato = false;
+                handPreRot = CelloHand.Instance.transform.localRotation;
+                vibratoTime = 0f;
+            }
+    }
 
-                ScoreManager.Instance.IncreaseScore(0);
+    public void LongNoteCollide()
+    {
+        if (timingManager.longNoteHitted)
+        {
+            if (timingManager.currentLongNoteDirection == 0 && bowAttached)
+            {
+                if (bowPrePos.x - bowCurPos.x >= longThreshold)
+                {
+                    if (timingManager.vibratoNoteFirst)
+                    {
+                        if (isPlayerVibrato)
+                            timingManager.LongNoteCheck();
+                        else
+                            timingManager.MissCheck();
+                    }
+                    else
+                        timingManager.LongNoteCheck();
 
-                ComboManager.Instance.judgeRecord[0]++;
+                    bowPrePos = bowCurPos;
+                }
+                else
+                {
+                    timingManager.MissCheck();
+                }
+            }
+            else if (timingManager.currentLongNoteDirection == 1 && bowAttached)
+            {
+                if (bowCurPos.x - bowPrePos.x >= longThreshold)
+                {
+                    if (timingManager.vibratoNoteFirst)
+                    {
+                        if (isPlayerVibrato)
+                            timingManager.LongNoteCheck();
+                        else
+                            timingManager.MissCheck();
+                    }
+                    else
+                        timingManager.LongNoteCheck();
 
-                PlayerController.Instance.PlayerHeal(10f);
-
-                AudioManagerScript.Instance.PlaySFX("Clap");
-                handPreRot = CelloHand.Instance.transform.rotation;
-                longNoteCurTime = 0f;
+                    bowPrePos = bowCurPos;
+                }
+                else
+                    timingManager.MissCheck();
             }
         }
+    }
+
+    public void LongNoteCollideEnd()
+    {
+        LongNoteCollide();
+        timingManager.longNoteHitted = false;
+        timingManager.panelNoteDetector.transform.localPosition = new Vector3(1000f,
+           timingManager.panelNoteDetector.transform.localPosition.y, timingManager.panelNoteDetector.transform.localPosition.z);
+        //longnote end «ÿ¡÷±‚
     }
 }
